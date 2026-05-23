@@ -78,6 +78,11 @@ Stop fumbling with GUI apps to debug Bluetooth Low Energy devices. `blew` gives 
 brew install stass/tap/blew
 ```
 
+### Requirements
+
+- macOS 14.5 (Sonoma) or later
+- Xcode 16.3 or later (Swift 6.1+ toolchain) — the MCP swift-sdk dependency declares `swift-tools-version:6.1` and uses concurrency APIs (the parameterless `withThrowingTaskGroup` overload) that were introduced in Swift 6.1. Xcode 16.2 and earlier (Swift 6.0.x) will fail to build with "missing argument for parameter 'of' in call".
+
 ### Build from source
 
 ```bash
