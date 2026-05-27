@@ -1,3 +1,4 @@
+#if MCP_ENABLED
 import ArgumentParser
 import Foundation
 
@@ -12,3 +13,4 @@ struct MCPCommand: AsyncParsableCommand {
         try await server.start()
     }
 }
+#endif

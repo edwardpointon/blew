@@ -548,6 +548,15 @@ Custom vendor UUIDs that do not follow the Bluetooth Base pattern return `nil`.
 
 `blew mcp` starts an MCP (Model Context Protocol) server over stdio, allowing AI agents (Cursor, Claude Desktop, etc.) to discover and invoke BLE operations as structured tool calls.
 
+**Conditional compilation:**
+
+The MCP swift-sdk dependency declares `swift-tools-version:6.1` and uses concurrency APIs (the parameterless `withThrowingTaskGroup` overload) introduced in Swift 6.1, so it cannot be built with Swift 6.0.x (Xcode 16.0–16.2). To keep blew buildable on those toolchains, MCP support is gated behind compiler-version detection:
+
+- `Package.swift` uses `#if compiler(>=6.1)` to decide whether to add the swift-sdk package dependency, the `MCP` product dependency (on both the `blew` and `blewTests` targets), and the `MCP_ENABLED` swift define. The package's own `swift-tools-version` stays at `6.0` so the manifest itself loads under the older toolchain.
+- All MCP source is wrapped in `#if MCP_ENABLED`: `MCPServer.swift`, `MCPCommand.swift`, and `MCPTests.swift` compile to nothing when the flag is absent. `Blew.subcommandList` appends `MCPCommand.self` only under `#if MCP_ENABLED`, so the `mcp` subcommand simply does not exist on a Swift 6.0 build.
+
+When built with Swift 6.1+ everything below applies; on Swift 6.0.x the `mcp` subcommand is absent and every other command is unchanged.
+
 **Architecture:**
 
 The MCP server reuses the existing structured output system. Instead of rendering `CommandOutput` to text (via `TextRenderer` / `KVRenderer`), the server converts `CommandResult` data directly to JSON via `Codable` conformances and returns it as MCP `structuredContent`.
@@ -659,7 +668,7 @@ blew (executable)
  │     Shared: BLEError, PeripheralTypes, PeripheralEvent, DeviceInfo
  ├── LineNoise                         (system libedit — linenoise Swift implementation)
  ├── ArgumentParser                    (swift-argument-parser)
- ├── MCP                               (modelcontextprotocol/swift-sdk)
+ ├── MCP                               (modelcontextprotocol/swift-sdk; only when compiler >= 6.1)
  └── [build plugin] GenerateBLENames   runs Scripts/generate-all-ble.sh, which invokes:
                                          Scripts/generate-ble-names.rb
                                            reads Vendor/bluetooth-numbers-database/v1/*.json

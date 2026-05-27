@@ -80,8 +80,10 @@ brew install stass/tap/blew
 
 ### Requirements
 
-- macOS 14.5 (Sonoma) or later
-- Xcode 16.3 or later (Swift 6.1+ toolchain) — the MCP swift-sdk dependency declares `swift-tools-version:6.1` and uses concurrency APIs (the parameterless `withThrowingTaskGroup` overload) that were introduced in Swift 6.1. Xcode 16.2 and earlier (Swift 6.0.x) will fail to build with "missing argument for parameter 'of' in call".
+- macOS 14 (Sonoma) or later
+- Xcode 16 or later (Swift 6.0+ toolchain)
+
+The MCP server (the `blew mcp` subcommand) depends on the MCP swift-sdk, which requires the Swift 6.1 toolchain (Xcode 16.3+). To keep blew building on older toolchains, MCP support is compiled in conditionally: when built with Swift 6.1 or newer the `mcp` subcommand is available; when built with Swift 6.0.x (Xcode 16.0–16.2) the MCP server is omitted and every other command works unchanged. No flags are needed — the detection happens automatically in `Package.swift`.
 
 ### Build from source
 

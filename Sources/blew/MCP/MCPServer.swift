@@ -1,3 +1,4 @@
+#if MCP_ENABLED
 import Foundation
 import MCP
 import BLEManager
@@ -663,3 +664,4 @@ extension BlewMCPServer {
         "pick":         .object(["type": .string("string"), "enum": .array([.string("strongest"), .string("first"), .string("only")]), "description": .string("Auto-select strategy")]),
     ]
 }
+#endif

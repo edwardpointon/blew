@@ -14,7 +14,13 @@ struct Blew: AsyncParsableCommand {
         abstract: "macOS BLE CLI workbench",
         discussion: "Global options must be placed before the subcommand name.",
         version: "0.2.0",
-        subcommands: [
+        subcommands: Blew.subcommandList
+    )
+
+    /// The `mcp` subcommand is only available when built with a toolchain that
+    /// supports the MCP swift-sdk (Swift 6.1+); see Package.swift.
+    static var subcommandList: [ParsableCommand.Type] {
+        var commands: [ParsableCommand.Type] = [
             ScanCommand.self,
             ConnectCommand.self,
             GATTCommand.self,
@@ -23,9 +29,12 @@ struct Blew: AsyncParsableCommand {
             SubCommand.self,
             PeriphCommand.self,
             ExecCommand.self,
-            MCPCommand.self,
         ]
-    )
+        #if MCP_ENABLED
+        commands.append(MCPCommand.self)
+        #endif
+        return commands
+    }
 
     @OptionGroup var globals: GlobalOptions
 

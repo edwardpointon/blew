@@ -1,3 +1,4 @@
+#if MCP_ENABLED
 import XCTest
 import Foundation
 import MCP
@@ -742,7 +743,7 @@ final class MCPToolDispatchTests: XCTestCase {
         let params = CallTool.Parameters(name: "ble_gatt_info", arguments: ["char_uuid": .string("2A19")])
         let result = try await server.handleToolCall(params)
         let text = result.content.compactMap { item -> String? in
-            if case .text(let t) = item { return t }
+            if case .text(let t) = item { return t.text }
             return nil
         }.joined()
         XCTAssertTrue(text.contains("Battery Level"), "Expected 'Battery Level' in text content: \(text)")
@@ -828,7 +829,7 @@ final class MCPToolDispatchTests: XCTestCase {
         commandResult.errors = ["something failed"]
         let mcpResult = server.buildMCPResult(commandResult)
         let text = mcpResult.content.compactMap { item -> String? in
-            if case .text(let t) = item { return t }
+            if case .text(let t) = item { return t.text }
             return nil
         }.joined()
         XCTAssertTrue(text.contains("something failed"), "Error text should appear in content: \(text)")
@@ -838,7 +839,7 @@ final class MCPToolDispatchTests: XCTestCase {
         let commandResult = CommandResult()  // exitCode=0, no output
         let mcpResult = server.buildMCPResult(commandResult)
         let text = mcpResult.content.compactMap { item -> String? in
-            if case .text(let t) = item { return t }
+            if case .text(let t) = item { return t.text }
             return nil
         }.joined()
         XCTAssertEqual(text, "OK")
@@ -1114,3 +1115,4 @@ final class MCPIntegrationTests: XCTestCase {
         }
     }
 }
+#endif
